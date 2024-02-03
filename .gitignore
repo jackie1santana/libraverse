@@ -1,0 +1,120 @@
+# Node (for Angular client)
+node_modules/
+/dist/
+# Environment files
+*.env
+.env.*
+
+# Angular files
+.angular-cache/
+/angular-build/
+
+# IDEs and Editors
+/.idea/
+*.swp
+*.swo
+.vscode/
+*.sublime-workspace
+
+# Operating System Files
+.DS_Store
+Thumbs.db
+
+# Python (for Django-based services)
+*.pyc
+__pycache__/
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+pip-log.txt
+.tox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+.hypothesis/
+.pytest_cache/
+*.egg-info/
+.installed.cfg
+
+# Ruby (for User Authentication Service)
+/.bundle/
+/.yardoc
+/_yardoc/
+/doc/
+/rdoc/
+*.gem
+*.rbc
+/.config
+/coverage/
+/InstalledFiles
+/pkg/
+/spec/reports/
+/spec/examples.txt
+.test
+tmp/
+
+# Golang
+/bin/
+/pkg/
+/vendor/
+
+# Terraform
+.terraform/
+*.tfstate
+*.tfstate.*.backup
+*.tfstate.backup
+*.tfvars
+
+# NGINX
+# Consider excluding specific configuration files if they contain sensitive information
+
+# CircleCI
+# Generally, you want your CircleCI configurations checked in, but exclude sensitive files
+
+# Logs and databases.
+*.log
+*.sql
+*.sqlite
+
+# Others
+*.tar.gz
+*.zip
+*.rar
+*.exe
+*.dll
+*.so
+*.dylib
+*.test
+
+# Dependency directories
+jspm_packages/
+bower_components/
+
+# Compiled binary addons (https://nodejs.org/api/addons.html)
+build/Release/
+
+# Output of 'npm pack'
+*.tgz
+
+# Yarn Integrity file
+.yarn-integrity
+
+# dotenv environment variable files
+.env
+.env.test
+
+# Gatsby files
+.cache/
+/public
+
+# Mac files
+.DS_Store
+
+# Yarn
+.yarn/
+.pnp.*

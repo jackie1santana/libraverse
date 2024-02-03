@@ -1,0 +1,75 @@
+# Node (common for Angular projects)
+node_modules
+npm-debug.log
+dist
+# Angular-specific files
+angular.json
+*.ts.map
+*.spec.ts
+e2e/
+src/
+coverage/
+
+# Python (common for Django projects)
+*.pyc
+__pycache__/
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+pip-log.txt
+.tox/
+.coverage
+.coverage.*
+.cache
+*.egg-info/
+.installed.cfg
+*.env
+
+# Ruby
+*.gem
+*.rbc
+/.config
+/coverage/
+/InstalledFiles
+/pkg/
+/spec/reports/
+/spec/examples.txt
+.yardoc
+/vendor/bundle/
+/vendor/cache/
+/vendor/gems/
+/vendor/ruby/
+
+# Golang
+/vendor/
+*.o
+*.a
+*.so
+bin/
+pkg/
+
+# System files
+.DS_Store
+Thumbs.db
+
+# IDEs and text editors
+.idea/
+*.swp
+*.swo
+*.sublime-workspace
+.vscode/
+
+# Logs and temporary files
+*.log
+tmp/
+
+# Docker specific
+Dockerfile*
+.dockerignore
+
+# Version control
+.git/
+.gitignore
+.svn/

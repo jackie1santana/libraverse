@@ -1,0 +1,18 @@
+{
+  "name": "libraverse",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start:web": "npm run start",
+    "start:api": "rails s",
+    "start:worker": "python your_script.py",
+    "start": "concurrently \"npm run start:web\" \"npm run start:api\" \"npm run start:worker\""
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}
