@@ -1,189 +1,119 @@
 
 # Comprehensive Installation Guide for LibraVerse Project Technologies
 
-This guide provides detailed, step-by-step instructions for installing all the necessary technologies and libraries for the LibraVerse project, ensuring a complete setup for development, container orchestration, continuous integration, and API management.
+This guide provides a step-by-step installation process for the technologies involved in the LibraVerse project, focusing on development, containerization, orchestration, and micro-frontend integration using Federation with TypeScript, React 18, Angular, and React Native for mobile development.
 
 ## 1. Development Frameworks and Libraries
 
-### 1.1 Ruby (User Authentication Service)
-
-- Install Rails for Ruby-based services:
+### Ruby (User Authentication Service)
+- Install Rails and required gems for authentication:
   ```bash
   gem install rails
-  ```
-
-- Add Devise for authentication:
-  ```bash
   echo "gem 'devise'" >> Gemfile
-  bundle install
-  ```
-
-- Add JWT for JSON Web Tokens:
-  ```bash
   echo "gem 'jwt'" >> Gemfile
   bundle install
   ```
 
-### 1.2 Python with Django (Book Management Service)
-
-- Install Django and REST Framework for Python-based services:
+### Python with Django (Book Management Service)
+- Install Django and Django REST Framework:
   ```bash
   pip install django djangorestframework
-  ```
-
-- Add support for JWT in Django:
-  ```bash
   pip install djangorestframework-jwt
   ```
 
-### 1.3 Angular (Front-End Application)
-
-- Ensure Node.js and npm are installed, then install Angular CLI and Material:
-  ```bash
-  npm install -g @angular/cli
-  ng add @angular/material
-  ```
-
-### 1.4 Golang (AI Book Recognition Service)
-
-- Set up Go Gin for the web framework and AWS SDK for Go if using AWS Rekognition:
+### Golang (AI Book Recognition Service)
+- Setup Go environment and libraries:
   ```bash
   go get -u github.com/gin-gonic/gin
   go get github.com/aws/aws-sdk-go
   ```
 
-### 1.5 React Native (Mobile Application)
+## 2. Front-End Development
 
-- Install the React Native CLI and initialize your project:
+### Angular Application
+- Install Angular CLI and Angular Material:
   ```bash
-  npm install -g react-native-cli
-  react-native init LibraVerseMobileApp
+  npm install -g @angular/cli
+  ng add @angular/material
   ```
 
-- Add the camera module for React Native:
+### React with TypeScript (Web Application)
+- Create a React TypeScript project and upgrade to React 18:
   ```bash
+  npx create-react-app my-app --template typescript
+  cd my-app
+  npm install react@18 react-dom@18
+  ```
+
+### React Native (Mobile Application)
+- Install React Native CLI and initialize the project:
+  ```bash
+  npm install -g react-native-cli
+  react-native init LibraVerseMobileApp --template react-native-template-typescript
   npm install react-native-camera --save
   cd ios && pod install && cd ..
   ```
 
-## 2. Cross-Service Technologies
+## 3. Federation Setup for Micro Frontends
 
-### 2.1 Docker
-
-- Download and install Docker for containerization:
-  ```plaintext
-  Visit docker.com to download Docker Desktop.
-  ```
-
-### 2.2 Terraform
-
-- Install Terraform for infrastructure as code:
+### Integrating Angular and React with Module Federation
+- Install Webpack Module Federation plugins in both Angular and React projects:
   ```bash
-  Download Terraform from terraform.io.
-  ```
-
-### 2.3 AWS CLI
-
-- Set up AWS CLI for cloud service management:
-  ```bash
-  pip install awscli
-  aws configure
-  ```
-
-### 2.4 ULID Generation
-
-- Add ULID support for unique identifiers in your services:
-  ```bash
-  # Ruby
-  echo "gem 'ulid'" >> Gemfile && bundle install
-  # Python
-  pip install python-ulid
-  # Node.js
-  npm install ulid
-  # Golang
-  go get github.com/oklog/ulid
-  ```
-
-## 3. Kubernetes and AWS Fargate
-
-### 3.1 Kubernetes (EKS)
-
-- Install `eksctl` to create and manage an EKS cluster:
-  ```bash
-  # Download and install eksctl
-  curl --silent --location "https://github.com/weaveworks/eksctl/releases/latest/download/eksctl_$(uname -s)_amd64.tar.gz" | tar xz -C /tmp
-  sudo mv /tmp/eksctl /usr/local/bin
-  ```
-
-- Create an EKS cluster:
-  ```bash
-  eksctl create cluster --name libraVerseCluster --region your-region --fargate
-  ```
-
-### 3.2 AWS Fargate
-
-- Use AWS Fargate for serverless container execution, configured through `eksctl` or the AWS Management Console.
-
-## 4. CircleCI
-
-- Sign up for CircleCI and connect your GitHub or Bitbucket repository.
-- Add a `.circleci/config.yml` file to your repository to define your CI/CD pipeline.
-
-## 5. API Gateway (NGINX)
-
-- Install NGINX to serve as an API Gateway:
-  ```bash
-  sudo apt update
-  sudo apt install nginx
-  ```
-- Configure NGINX for routing, load balancing, and SSL termination according to your service architecture.
-
-By following this guide, you’ll have a robust setup for the LibraVerse project, leveraging modern technologies and practices for scalable, efficient development and deployment.
-
-## 6. Local Kubernetes Setup
-
-### 6.1 Minikube
-
-Minikube is a tool that allows you to run Kubernetes locally. It runs a single-node Kubernetes cluster on your personal computer (including Windows, macOS, and Linux PCs) so you can try out Kubernetes or develop with it day-to-day.
-
-- **Install Minikube**:
-  ```bash
-  # For macOS
-  brew install minikube
+  # For React project
+  npm install @module-federation/module-federation-plugin
   
-  # For Linux
-  curl -LO https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
-  sudo install minikube-linux-amd64 /usr/local/bin/minikube
-  
-  # For Windows
-  choco install minikube
+  # For Angular project, use custom builders that support Module Federation
+  ng add @angular-architects/module-federation
   ```
 
-- **Start Minikube**:
+- Configure `webpack.config.js` in React and Angular.json in Angular to enable federation.
+
+## 4. Containerization with Docker
+
+- Install Docker Desktop from the official website.
+
+## 5. Kubernetes and AWS Fargate Orchestration
+
+### Kubernetes Cluster Setup in AWS EKS
+- Use `eksctl` to create and manage an EKS cluster integrated with AWS Fargate.
+
+## 6. Continuous Integration with CircleCI
+
+- Setup CI/CD pipelines with CircleCI by connecting your repositories and adding `.circleci/config.yml`.
+
+## 7. Infrastructure as Code with Terraform
+
+- Download and install Terraform from the official site.
+
+## 8. API Gateway Integration with NGINX
+
+- Install NGINX and configure as your API Gateway.
+
+## 9. Local Kubernetes Setup with Minikube
+
+- Install Minikube for local Kubernetes cluster simulation:
+  ```bash
+  brew install minikube # macOS
+  choco install minikube # Windows
+  ```
+
+- Start Minikube:
   ```bash
   minikube start
   ```
 
-### 6.2 Kubectl
+## 10. Cross-Service Technologies
 
-Kubectl is a command-line tool that allows you to run commands against Kubernetes clusters. You will use it to deploy applications, inspect and manage cluster resources, and view logs.
+### Docker
+- For containerization across all services.
 
-- **Install Kubectl**:
-  ```bash
-  # For macOS
-  brew install kubectl
-  
-  # For Linux
-  curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
-  sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
-  
-  # For Windows
-  choco install kubernetes-cli
-  ```
+### Terraform
+- To define and provision AWS infrastructure.
 
-- **Verify Installation**:
-  ```bash
-  kubectl version --client
-  ```
+### AWS CLI
+- For managing AWS services.
 
-This section ensures you have the tools needed to run a Kubernetes cluster locally for development and testing purposes before deploying to AWS.
+### ULID Support
+- Ensure unique identifier generation across services.
+
+Following this updated guide will ensure a comprehensive setup for developing the LibraVerse project, leveraging the latest in front-end and back-end technologies.

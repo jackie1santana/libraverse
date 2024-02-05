@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start:web": "npm run start",
+    "start:client": "cd ./client && ng serve",
     "start:api": "rails s",
     "start:worker": "python your_script.py",
     "start": "concurrently \"npm run start:web\" \"npm run start:api\" \"npm run start:worker\""
