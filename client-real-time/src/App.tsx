@@ -12,6 +12,8 @@ function App() {
 for(const fruit of fruits) {
   console.log(fruit)
 }
+
+
   return (
     <>
      <Notifications setStatus={setStatus}/>
