@@ -4,11 +4,22 @@ import { createLogger, format, transports } from 'winston';
 import 'winston-daily-rotate-file'; // For log rotation
 import chalk from 'chalk'; // For colorful log outputs
 import morgan from 'morgan';
+import { createServer } from 'http';
+import { Server as SocketIO } from 'socket.io';
+
+const app = express(); // Initialize the Express application
+
+const httpServer = createServer(app);
+const io = new SocketIO(httpServer);
+
+
 
 dotenv.config(); // Load environment variables from .env file into process.env
 
-const webServer = express(); // Initialize the Express application
-const socketServer = express(); // Initialize another Express app for the socket server, if needed
+
+// Initialize another Express app for the socket server, if needed
+
+
 
 // Default to 3000 if SERVER_PORT is not defined in the environment variables
 const serverPort = process.env.SERVER_PORT || 3000;
@@ -59,6 +70,14 @@ const logger = createLogger({
   ],
 });
 
+// Handle uncaught exceptions and promise rejections
+logger.exceptions.handle(
+  new transports.File({ filename: 'logs/exceptions.log' })
+);
+logger.rejections.handle(
+  new transports.File({ filename: 'logs/rejections.log' })
+);
+
 // Define custom logging functions that utilize chalk for additional styling
 const customLog = {
   info: (message) => logger.info(chalk.blueBright(message)), // Informational logs in blue
@@ -87,6 +106,12 @@ morgan.token('session-id', (req) => `SessionID: ${req.sessionID || 'None'}`);
 morgan.token('security-event', (req) => req.securityEvent || 'SecurityEvent: None');
 morgan.token('http-error', (req, res) => res.httpError || '');
 
+// Error handling middleware
+app.use((err, req, res, next) => {
+  logger.error(`Error: ${err.message}`);
+  res.status(500).send('An error occurred');
+});
+
 const detailedLogFormat = morgan((tokens, req, res) => {
   const logMessage = [
     chalk.hex('#FF5733')(`${tokens.method(req, res)}`), // Method colorized
@@ -104,30 +129,74 @@ const detailedLogFormat = morgan((tokens, req, res) => {
 });
 
 
-
 // Use the detailed log format with both webServer and socketServer
-webServer.use(detailedLogFormat);
-socketServer.use(detailedLogFormat);
+app.use(detailedLogFormat);
+app.use(detailedLogFormat);
+// Morgan middleware for HTTP request logging
+app.use(morgan('combined', { stream: { write: message => logger.info(message.trim()) } }));
+
+
 
 // Example endpoint to demonstrate logging
-webServer.get('/', (req, res) => {
-  res.send('Hello World!');
-  const cacheStatus = req.headers['if-none-match'] ? 'Hit' : 'Miss';
-  logger.info(`Cache status: ${chalk.yellow(cacheStatus)}`);
-  customLog.info('Served Hello World!'); // Log when the endpoint is hit
-});
+// app.get('/', (req, res) => {
+//   res.send('Hello World!');
+//   const cacheStatus = req.headers['if-none-match'] ? 'Hit' : 'Miss';
+//   logger.info(`Cache status: ${chalk.yellow(cacheStatus)}`);
+//   customLog.info('Served Hello World!'); // Log when the endpoint is hit
+// });
 
 // Start the web server and log the event
-webServer.listen(serverPort, () => {
-  customLog.info(`🚀 Node Web Server running on port ${serverPort}`);
-  customLog.info(`🌐 Click here to open in your browser: ${chalk.green(`http://localhost:${serverPort}`)}`);
-}).on('error', (err) => {
-  // Handle server start errors
-  customLog.error(`🛑 An error occurred starting the node web server: ${err.message}`);
-  customLog.trace('Attempting to start web server');
-  customLog.info(`💡 To free up the port, you can use the command: "lsof -i tcp:${serverPort}" followed by "kill -9 <PID>"`);
-  customLog.info(`🔗 Alternatively, you can manually open http://localhost:${serverPort} in your browser if the port becomes available.`);
+// app.listen(serverPort, () => {
+//   customLog.info(`🚀 Node Web Server running on port ${serverPort}`);
+//   customLog.info(`🌐 Click here to open in your browser: ${chalk.green(`http://localhost:${serverPort}`)}`);
+// }).on('error', (err) => {
+//   // Handle server start errors
+//   customLog.error(`🛑 An error occurred starting the node web server: ${err.message}`);
+//   customLog.trace('Attempting to start web server');
+//   customLog.info(`💡 To free up the port, you can use the command: "lsof -i tcp:${serverPort}" followed by "kill -9 <PID>"`);
+//   customLog.info(`🔗 Alternatively, you can manually open http://localhost:${serverPort} in your browser if the port becomes available.`);
+// });
+
+
+// Assuming previous setup code here
+
+// Socket.io connection handling with custom logs
+io.on('connection', (socket) => {
+  // Log when a user connects
+  logger.info(chalk.green(`💬 Live Chat: New connection established on port ${PORT}`));
+
+  // Emit a welcome message on new connection
+  socket.emit('welcome', 'Welcome to the live chat!');
+
+  // Log custom messages or perform actions on specific events
+  socket.on('chat message', (msg) => {
+    logger.info(chalk.cyan(`Message received: ${msg}`));
+    io.emit('chat message', msg); // Broadcast the received message to all clients
+  });
+
+  // Log when a user disconnects
+  socket.on('disconnect', () => {
+    logger.warn(chalk.yellow(`💬 Live Chat: A connection was closed on port ${PORT}`));
+  });
 });
+
+// Additional logging when the server starts
+httpServer.listen(liveChatSocketServerPort, () => {
+  logger.info(chalk.bgGreen(`💬 Live Chat WebSocket Server open on http://localhost:${liveChatSocketServerPort}`));
+}).on('error', (error) => {
+  logger.error(chalk.bgRed(`🛑 Server failed to start: ${error.message}`));
+});
+
+// Example of custom logging for error handling
+process.on('uncaughtException', (error) => {
+  logger.error(chalk.bgRed(`🛑 Uncaught Exception: ${error.message}`));
+});
+
+process.on('unhandledRejection', (reason, promise) => {
+  logger.warn(chalk.bgYellow(`🛑 Unhandled Rejection at: ${promise}, reason: ${reason}`));
+});
+
+
 
 // Continuing from the previous setup...
 
@@ -135,17 +204,17 @@ webServer.listen(serverPort, () => {
 // This could be done using a library like 'ws' or 'socket.io' for real-time bi-directional communication.
 
 // Example setup for the socket server listening
-socketServer.listen(liveChatSocketServerPort, () => {
-    // Log when the socket server successfully starts
-    customLog.info(`💬 Node Live Chat Server hosted on ${liveChatSocketServerPort}`);
-}).on('error', (err) => {
-    // Handle socket server start errors
-    customLog.error(`🛑 An error occurred starting the node socket server: ${err.message}`);
-    customLog.trace('Attempting to start socket server');
-    // Provide helpful commands for troubleshooting common port issues
-    customLog.info(`💡 To free up the port, use: "lsof -i tcp:${liveChatSocketServerPort}" followed by "kill -9 <PID>"`);
-    customLog.info(`🔗 Alternatively, if the port becomes available, you can manually connect to the Live Chat Server.`);
-});
+// app.listen(liveChatSocketServerPort, () => {
+//     // Log when the socket server successfully starts
+//     customLog.info(`💬 Node Live Chat Server hosted on ${liveChatSocketServerPort}`);
+// }).on('error', (err) => {
+//     // Handle socket server start errors
+//     customLog.error(`🛑 An error occurred starting the node socket server: ${err.message}`);
+//     customLog.trace('Attempting to start socket server');
+//     // Provide helpful commands for troubleshooting common port issues
+//     customLog.info(`💡 To free up the port, use: "lsof -i tcp:${liveChatSocketServerPort}" followed by "kill -9 <PID>"`);
+//     customLog.info(`🔗 Alternatively, if the port becomes available, you can manually connect to the Live Chat Server.`);
+// });
 
 // Note: You'll need to replace this placeholder with your actual socket server implementation.
 // For example, if 
