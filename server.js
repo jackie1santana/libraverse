@@ -5,13 +5,19 @@ import 'winston-daily-rotate-file'; // For log rotation
 import chalk from 'chalk'; // For colorful log outputs
 import morgan from 'morgan';
 import { createServer } from 'http';
-import { Server as SocketIO } from 'socket.io';
+import { Server } from 'socket.io';
+import cors from 'cors'
 
 const app = express(); // Initialize the Express application
 
 const httpServer = createServer(app);
-const io = new SocketIO(httpServer);
-
+app.use(cors());
+const io = new Server(httpServer, {
+  cors: {
+    origin: "http://localhost:5173", // Allow requests from this origin
+    methods: ["GET", "POST"], // Allow these methods
+  }
+});
 
 
 dotenv.config(); // Load environment variables from .env file into process.env
@@ -22,9 +28,9 @@ dotenv.config(); // Load environment variables from .env file into process.env
 
 
 // Default to 3000 if SERVER_PORT is not defined in the environment variables
-const serverPort = process.env.SERVER_PORT || 3000;
+const serverPort = process.env.SERVER_PORT;
 // Default to 3001 if LIVE_CHAT_SOCKET_PORT is not defined
-const liveChatSocketServerPort = process.env.LIVE_CHAT_SOCKET_PORT || 3001;
+const liveChatSocketServerPort = process.env.LIVE_CHAT_SOCKET_PORT;
 
 const log = (...messages) => console.log(chalk.yellow(...messages));
 const trace = (message) => {
@@ -158,27 +164,23 @@ app.use(morgan('combined', { stream: { write: message => logger.info(message.tri
 // });
 
 
-// Assuming previous setup code here
-
-// Socket.io connection handling with custom logs
+// Assuming previous setup code here'
 io.on('connection', (socket) => {
-  // Log when a user connects
-  logger.info(chalk.green(`💬 Live Chat: New connection established on port ${PORT}`));
+  console.log(`⚡: ${socket.id} user just connected!`);
 
-  // Emit a welcome message on new connection
+  logger.info(chalk.green(`💬 Live Chat: New connection established on port ${liveChatSocketServerPort}`));
   socket.emit('welcome', 'Welcome to the live chat!');
 
-  // Log custom messages or perform actions on specific events
   socket.on('chat message', (msg) => {
-    logger.info(chalk.cyan(`Message received: ${msg}`));
-    io.emit('chat message', msg); // Broadcast the received message to all clients
+    logger.info(chalk.cyan(`Message from ${msg.sender}: ${msg.text}`))
+    io.emit('chat message', msg);
   });
-
-  // Log when a user disconnects
+  
   socket.on('disconnect', () => {
-    logger.warn(chalk.yellow(`💬 Live Chat: A connection was closed on port ${PORT}`));
+    console.log('🔥: A user disconnected');
   });
 });
+
 
 // Additional logging when the server starts
 httpServer.listen(liveChatSocketServerPort, () => {

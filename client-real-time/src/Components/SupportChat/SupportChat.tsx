@@ -4,7 +4,7 @@ import { io } from 'socket.io-client';
 // Connect to Socket.IO server
 const socket = io.connect('http://localhost:8000');
 
-export const LiveChat = () => {
+export const SupportChat = () => {
   const [messages, setMessages] = useState([]);
   const [inputMessage, setInputMessage] = useState("");
 
@@ -24,14 +24,14 @@ export const LiveChat = () => {
   const sendMessage = () => {
     if (inputMessage.trim()) {
       // Emit 'chat message' event to the server with sender and text
-      socket.emit('chat message', { sender: "John", text: inputMessage });
+      socket.emit('chat message', { sender: "Help Desk", text: inputMessage });
       setInputMessage(''); // Clear input field after sending
     }
   };
 
   return (
     <div>
-      <h2>John's Live Chat</h2>
+      <h2>Help Desk Support Chat</h2>
       <div id="chat-box">
         {/* Display each message in the chat box */}
         {messages.map((msg, index) => (
