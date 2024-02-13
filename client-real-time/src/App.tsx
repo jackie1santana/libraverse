@@ -5,6 +5,7 @@ import { Notifications } from './Components/Notifications/Notifications';
 import { LiveChat } from './Components/LiveChat/LiveChat';
 import { SupportChat } from './Components/SupportChat/SupportChat';
 
+
 function App() {
   const [status, setStatus] = useState(0);
 
@@ -14,6 +15,7 @@ function App() {
   });
 
   return (
+ 
     <Router>
       <div>
         <Notifications setStatus={setStatus} />

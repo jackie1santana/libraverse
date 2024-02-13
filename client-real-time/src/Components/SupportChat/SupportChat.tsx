@@ -1,13 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import { io } from 'socket.io-client';
+import { useAppSelector, useAppDispatch } from '../../state/hooks'
+import { decrement, increment } from './LiveChatSlice'
 
 // Connect to Socket.IO server
 const socket = io.connect('http://localhost:8000');
 
 export const SupportChat = () => {
+  const liveChatState = useAppSelector((state) => state.liveChat.value)
+  const dispatch = useAppDispatch()
+
   const [messages, setMessages] = useState([]);
   const [inputMessage, setInputMessage] = useState("");
 
+  console.log('redux works', liveChatState);
   useEffect(() => {
     // Listen for 'chat message' events from the server
     socket.on('chat message', (msg) => {
