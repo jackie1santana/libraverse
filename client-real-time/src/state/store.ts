@@ -1,12 +1,20 @@
 import { configureStore } from '@reduxjs/toolkit'
 import { useDispatch } from 'react-redux'
 import { LiveChatSlice } from '../Components/LiveChat/LiveChatSlice'
+import createSagaMiddleware from 'redux-saga'
+// import reducer from './reducers'
+import mySaga from './sagas'
+// create the saga middleware
+const sagaMiddleware = createSagaMiddleware()
 
 const store = configureStore({
   reducer: {
     liveChat: LiveChatSlice.reducer,
+    middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(sagaMiddleware),
   }
 })
+// then run the saga
+sagaMiddleware.run(mySaga)
 
 export type AppDispatch = typeof store.dispatch
 export const useAppDispatch: () => AppDispatch = useDispatch // Export a hook that can be reused to resolve types
